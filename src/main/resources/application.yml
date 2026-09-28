@@ -1,0 +1,26 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: url-shortener
+  data:
+    mongodb:
+      # When running via docker-compose, the "mongo" service name resolves
+      # automatically. For local Mongo, override with:
+      #   SPRING_DATA_MONGODB_URI=mongodb://localhost:27017/urlshortener
+      uri: ${MONGODB_URI}
+      database: urlshortener
+
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+
+app:
+  # Used to build the full short URL returned in API responses.
+
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration-ms: 86400000   # 24 hours
+
+
+

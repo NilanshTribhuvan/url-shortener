@@ -12,4 +12,4 @@ RUN mvn clean package -DskipTests
 
 EXPOSE 8081
 
-ENTRYPOINT ["java", "-jar", "target/url-shortener-1.0.0.jar"]
+ENTRYPOINT ["java", "-jar", "target/url-shortener.jar"]

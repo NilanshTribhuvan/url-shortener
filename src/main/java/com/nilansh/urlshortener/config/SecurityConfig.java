@@ -1,6 +1,7 @@
 package com.nilansh.urlshortener.config;
 
 import com.nilansh.urlshortener.security.JwtAuthFilter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -13,6 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
 @Configuration
+@Tag(name = "Health", description = "Application health check")
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
@@ -33,6 +35,7 @@ public class SecurityConfig {
                         "/swagger-ui.html",
                         "/v3/api-docs/**"
                 ).permitAll()
+                .requestMatchers("/health").permitAll()
 
                 // Authentication
                 .requestMatchers("/api/auth/**").permitAll()

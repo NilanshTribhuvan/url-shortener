@@ -26,7 +26,7 @@ public class JwtUtil {
         Date expiry = new Date(now.getTime() + expirationMs);
 
         return Jwts.builder()
-                .subject(userId)          // the "who" — read back out on validation
+                .subject(userId)
                 .issuedAt(now)
                 .expiration(expiry)
                 .signWith(key)
@@ -44,7 +44,7 @@ public class JwtUtil {
 
     public boolean isTokenValid(String token) {
         try {
-            extractUserId(token);   // throws if signature/expiry check fails
+            extractUserId(token);
             return true;
         } catch (Exception e) {
             return false;

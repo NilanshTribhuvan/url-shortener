@@ -31,7 +31,7 @@ public class AuthService {
 
         User user = User.builder()
                 .email(request.email())
-                .passwordHash(passwordEncoder.encode(request.password()))  // never store raw
+                .passwordHash(passwordEncoder.encode(request.password()))
                 .name(request.name())
                 .createdAt(Instant.now())
                 .build();

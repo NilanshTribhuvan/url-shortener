@@ -43,7 +43,7 @@ public class UrlService {
     public ShortenResponse createShortUrl(ShortenRequest request, String userId) {
         String originalUrl = request.getOriginalUrl();
 
-        // Dedup is now per user. Otherwise user B would get user A's link back.
+
         var existing = urlRepository.findByOriginalUrlAndUserId(originalUrl, userId);
         if (existing.isPresent()) {
             return toResponse(existing.get());
@@ -57,7 +57,7 @@ public class UrlService {
                 .clickCount(0L)
                 .createdAt(Instant.now())
                 .expiresAt(request.getExpiresAt())
-                .userId(userId)                       // new: the owner
+                .userId(userId)
                 .build();
 
         return toResponse(urlRepository.save(url));
@@ -67,8 +67,7 @@ public class UrlService {
         Url url = urlRepository.findByShortCode(shortCode)
                 .orElseThrow(() -> new UrlNotFoundException(shortCode));
 
-        // TTL background job runs every ~60s, so also check expiry inline
-        // and return 410 proactively instead of a stale redirect.
+
         if (url.getExpiresAt() != null && url.getExpiresAt().isBefore(Instant.now())) {
             throw new UrlExpiredException(shortCode);
         }
@@ -100,12 +99,7 @@ public class UrlService {
         return urlRepository.findByUserIdOrderByCreatedAtDesc(userId);
     }
 
-    // --- internals -------------------------------------------------------
 
-    /**
-     * Atomically increments clickCount using Mongo's $inc via findAndModify,
-     * so concurrent redirects never lose an increment to a lost read-then-write.
-     */
     private void incrementClickCount(String shortCode) {
         Query query = new Query(where("shortCode").is(shortCode));
         Update update = new Update().inc("clickCount", 1);
@@ -114,8 +108,7 @@ public class UrlService {
 
     private String generateUniqueCode(String originalUrl) {
         for (int attempt = 0; attempt <= MAX_COLLISION_RETRIES; attempt++) {
-            // Salt with the attempt number so a collision produces a
-            // different candidate on retry instead of looping forever.
+
             String input = originalUrl + (attempt == 0 ? "" : ":" + attempt);
             String candidate = md5Base62(input).substring(0, CODE_LENGTH);
 
@@ -131,7 +124,7 @@ public class UrlService {
             MessageDigest digest = MessageDigest.getInstance("MD5");
             byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
             String encoded = Base62Encoder.encode(hash);
-            // Pad in the rare case the encoding is shorter than CODE_LENGTH.
+
             while (encoded.length() < CODE_LENGTH) {
                 encoded = "0" + encoded;
             }

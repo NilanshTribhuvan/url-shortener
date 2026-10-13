@@ -2,10 +2,6 @@ package com.nilansh.urlshortener.service;
 
 import java.math.BigInteger;
 
-/**
- * Encodes bytes/numbers into a Base62 alphabet (0-9, a-z, A-Z).
- * Used to turn an MD5 digest into a short, URL-safe code.
- */
 public final class Base62Encoder {
 
     private static final String ALPHABET =
@@ -16,8 +12,7 @@ public final class Base62Encoder {
     }
 
     public static String encode(byte[] bytes) {
-        // Treat the digest as an unsigned big integer, then repeatedly
-        // divide by 62 to pull off Base62 digits.
+
         BigInteger value = new BigInteger(1, bytes);
         StringBuilder sb = new StringBuilder();
 

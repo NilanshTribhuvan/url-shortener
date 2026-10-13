@@ -11,11 +11,11 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.axcess</groupId>
+    <groupId>com.nilansh</groupId>
     <artifactId>url-shortener</artifactId>
     <version>1.0.0</version>
     <name>url-shortener</name>
-    <description>Bitly-style URL shortening service - Java Projects Mentorship Guide</description>
+
 
     <properties>
         <java.version>17</java.version>

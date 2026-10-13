@@ -28,7 +28,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                // Swagger / OpenAPI
+
                 .requestMatchers(
                         "/swagger-ui/**",
                         "/swagger-ui.html",
@@ -36,13 +36,12 @@ public class SecurityConfig {
                 ).permitAll()
                 .requestMatchers("/health").permitAll()
 
-                // Authentication
+
                 .requestMatchers("/api/auth/**").permitAll()
 
-                // Public redirects
                 .requestMatchers(HttpMethod.GET, "/{code}").permitAll()
 
-                // Everything else requires JWT
+
                 .anyRequest().authenticated()
         )
                 .exceptionHandling(e -> e

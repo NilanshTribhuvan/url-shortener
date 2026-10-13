@@ -36,9 +36,7 @@ public class UrlController {
                 .body(urlService.createShortUrl(request, userId));
     }
 
-    // 302 Found (temporary redirect) - not 301, so browsers never cache
-    // the destination and stale expired/updated targets aren't stuck.
-   
+
     @GetMapping("/{code}")
     public ResponseEntity<Void> redirect(@PathVariable String code) {
         String originalUrl = urlService.resolveAndTrack(code);

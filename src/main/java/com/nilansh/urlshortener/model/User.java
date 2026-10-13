@@ -23,7 +23,7 @@ public class User {
     @Indexed(unique = true)
     private String email;
 
-    // BCrypt hash only — the raw password never touches this field or the database.
+
     private String passwordHash;
 
     private String name;

@@ -31,12 +31,8 @@ public class Url {
 
     private Instant createdAt;
 
-    // TTL index: MongoDB deletes the document once the current time passes
-    // this field's value (expireAfterSeconds = 0 means "expire exactly at
-    // the stored instant", not zero seconds from insert).
     @Indexed(name = "ttl_expires_at_idx", expireAfterSeconds = 0)
     private Instant expiresAt;
 
-    // Populated once JWT auth (Phase 4) is added; null for anonymous links.
     private String userId;
 }

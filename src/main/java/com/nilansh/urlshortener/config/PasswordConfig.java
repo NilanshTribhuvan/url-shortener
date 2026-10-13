@@ -10,6 +10,6 @@ public class PasswordConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(12); // strength 12, per the guide's guidance
+        return new BCryptPasswordEncoder(12);
     }
 }

@@ -21,6 +21,10 @@ import java.time.Instant;
 import java.util.List;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
+import com.nilansh.urlshortener.model.ClickEvent;
+import com.nilansh.urlshortener.model.EventStatus;
+import com.nilansh.urlshortener.repository.ClickEventRepository;
+import java.util.UUID;
 
 @Service
 public class UrlService {
@@ -32,11 +36,15 @@ public class UrlService {
     private final MongoTemplate mongoTemplate;
     private final String baseUrl;
 
+    private final ClickEventRepository clickEventRepository;
+
     public UrlService(UrlRepository urlRepository,
                        MongoTemplate mongoTemplate,
+                      ClickEventRepository clickEventRepository,
                        @Value("${app.base-url}") String baseUrl) {
         this.urlRepository = urlRepository;
         this.mongoTemplate = mongoTemplate;
+        this.clickEventRepository = clickEventRepository;
         this.baseUrl = baseUrl;
     }
 
@@ -63,18 +71,29 @@ public class UrlService {
         return toResponse(urlRepository.save(url));
     }
 
+
     public String resolveAndTrack(String shortCode) {
+
         Url url = urlRepository.findByShortCode(shortCode)
                 .orElseThrow(() -> new UrlNotFoundException(shortCode));
 
-
-        if (url.getExpiresAt() != null && url.getExpiresAt().isBefore(Instant.now())) {
+        if (url.getExpiresAt() != null &&
+                url.getExpiresAt().isBefore(Instant.now())) {
             throw new UrlExpiredException(shortCode);
         }
 
-        incrementClickCount(shortCode);
+        ClickEvent event = ClickEvent.builder()
+                .id(UUID.randomUUID().toString())
+                .shortCode(shortCode)
+                .clickedAt(Instant.now())
+                .status(EventStatus.PENDING)
+                .build();
+
+        clickEventRepository.save(event);
+
         return url.getOriginalUrl();
     }
+
 
     public StatsResponse getStats(String shortCode, String userId) {
         Url url = urlRepository.findByShortCodeAndUserId(shortCode,userId)

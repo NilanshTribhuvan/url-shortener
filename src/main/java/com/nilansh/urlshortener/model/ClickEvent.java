@@ -29,4 +29,8 @@ public class ClickEvent {
     private String userAgent;
 
     private String country;
+
+    private EventStatus status;
+
+    private String claimToken;
 }

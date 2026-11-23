@@ -7,6 +7,7 @@ import com.nilansh.urlshortener.dto.StatsResponse;
 import com.nilansh.urlshortener.service.UrlService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,12 +39,22 @@ public class UrlController {
 
 
     @GetMapping("/{code}")
-    public ResponseEntity<Void> redirect(@PathVariable String code) {
-        String originalUrl = urlService.resolveAndTrack(code);
+    public ResponseEntity<Void> redirect(
+            @PathVariable String code,
+            HttpServletRequest request) {
+
+        String referrer = request.getHeader("Referer");
+        String userAgent = request.getHeader("User-Agent");
+
+        String originalUrl = urlService.resolveAndTrack(
+                code, referrer, userAgent
+        );
+
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(URI.create(originalUrl))
                 .build();
     }
+
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/api/stats/{code}")
     public ResponseEntity<StatsResponse> stats(@PathVariable String code,@AuthenticationPrincipal String userId) {

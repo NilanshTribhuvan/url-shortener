@@ -25,6 +25,7 @@ import com.nilansh.urlshortener.model.ClickEvent;
 import com.nilansh.urlshortener.model.EventStatus;
 import com.nilansh.urlshortener.repository.ClickEventRepository;
 import java.util.UUID;
+import java.net.URI;
 
 @Service
 public class UrlService {
@@ -72,7 +73,10 @@ public class UrlService {
     }
 
 
-    public String resolveAndTrack(String shortCode) {
+    public String resolveAndTrack(
+            String shortCode,
+            String referrer,
+            String userAgent) {
 
         Url url = urlRepository.findByShortCode(shortCode)
                 .orElseThrow(() -> new UrlNotFoundException(shortCode));
@@ -86,6 +90,8 @@ public class UrlService {
                 .id(UUID.randomUUID().toString())
                 .shortCode(shortCode)
                 .clickedAt(Instant.now())
+                .referrer(extractReferrerDomain(referrer))
+                .userAgent(userAgent)
                 .status(EventStatus.PENDING)
                 .build();
 
@@ -168,5 +174,27 @@ public class UrlService {
         url.setExpiresAt(newExpiresAt);
         Url saved = urlRepository.save(url);
         return toResponse(saved);
+    }
+
+    private String extractReferrerDomain(String referrer) {
+
+        if (referrer == null || referrer.isBlank()) {
+            return "DIRECT";
+        }
+
+        try {
+            String host = URI.create(referrer).getHost();
+
+            if (host == null) {
+                return "OTHER";
+            }
+
+            return host.startsWith("www.")
+                    ? host.substring(4)
+                    : host;
+
+        } catch (IllegalArgumentException e) {
+            return "OTHER";
+        }
     }
 }

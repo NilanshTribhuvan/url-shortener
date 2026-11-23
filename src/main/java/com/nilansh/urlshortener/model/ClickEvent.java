@@ -26,6 +26,8 @@ public class ClickEvent {
     // Store a SHA-256 hash of the IP, never the raw address (privacy).
     private String ipAddressHash;
 
+    private String referrer;
+
     private String userAgent;
 
     private String country;

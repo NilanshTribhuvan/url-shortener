@@ -168,13 +168,23 @@ public class UrlService {
                 url.getExpiresAt()
         );
     }
-    public ShortenResponse updateExpiry(String shortCode, Instant newExpiresAt) {
-        Url url = urlRepository.findByShortCode(shortCode)
+
+    public ShortenResponse updateExpiry(
+            String shortCode,
+            Instant newExpiresAt,
+            String userId) {
+
+        Url url = urlRepository.findByShortCodeAndUserId(
+                        shortCode, userId)
                 .orElseThrow(() -> new UrlNotFoundException(shortCode));
+
         url.setExpiresAt(newExpiresAt);
+
         Url saved = urlRepository.save(url);
+
         return toResponse(saved);
     }
+
 
     private String extractReferrerDomain(String referrer) {
 

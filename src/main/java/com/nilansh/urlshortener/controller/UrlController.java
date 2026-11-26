@@ -74,7 +74,7 @@ public class UrlController {
     }
     @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping("/api/{code}")
-    public ResponseEntity<ShortenResponse> updateExpiry(@PathVariable String code, @RequestBody ShortenRequest request) {
-        return ResponseEntity.ok(urlService.updateExpiry(code, request.getExpiresAt()));
+    public ResponseEntity<ShortenResponse> updateExpiry(@PathVariable String code, @RequestBody ShortenRequest request, @AuthenticationPrincipal String userId) {
+        return ResponseEntity.ok(urlService.updateExpiry(code, request.getExpiresAt(), userId));
     }
 }
